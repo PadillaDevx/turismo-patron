@@ -5,9 +5,21 @@ import { Clock, Phone, Shield, Wallet, WhatsApp } from './Icons'
 import { SectionTitle } from './Sections'
 
 const TIPOS = ['Solo ida', 'Viaje redondo', 'Tour / paseo', 'Aeropuerto', 'Evento / grupo']
-const UNIDADES = ['Sin preferencia', 'Toyota Hiace (hasta 14)', 'Toyota RAV4 (hasta 4)']
+// Tipos de viaje que llevan regreso (los de "Solo ida" y "Aeropuerto" no)
+const CON_REGRESO = ['Viaje redondo', 'Tour / paseo', 'Evento / grupo']
 
-const VACIO = { nombre: '', origen: '', destino: '', fecha: '', hora: '', pasajeros: 1, tipo: TIPOS[0], unidad: UNIDADES[0], notas: '' }
+const UNIDADES = [
+  { id: 'rav4', nombre: 'Toyota RAV4', cupo: 4 },
+  { id: 'hiace', nombre: 'Toyota Hiace', cupo: 14 },
+]
+// La unidad más chica en la que cabe el grupo
+const unidadPara = (pax) => (UNIDADES.find((u) => pax <= u.cupo) ?? UNIDADES.at(-1)).id
+const nombreUnidad = (id) => {
+  const u = UNIDADES.find((x) => x.id === id)
+  return `${u.nombre} (hasta ${u.cupo})`
+}
+
+const VACIO = { nombre: '', origen: '', destino: '', fecha: '', hora: '', fechaRegreso: '', horaRegreso: '', pasajeros: 1, tipo: TIPOS[0], unidad: 'rav4', notas: '' }
 
 export const Toast = Swal.mixin({
   toast: true,
@@ -38,20 +50,40 @@ export default function Cotizador({ destinoInicial }) {
   }, [destinoInicial])
 
   const set = (k) => (e) => setF((p) => ({ ...p, [k]: e.target.value }))
+  const conRegreso = CON_REGRESO.includes(f.tipo)
+  const pax = Math.max(1, Number(f.pasajeros) || 1)
+  const recomendada = unidadPara(pax)
+
+  // Al cambiar pasajeros se elige sola la unidad adecuada
+  const setPasajeros = (e) => {
+    const v = e.target.value
+    setF((p) => ({ ...p, pasajeros: v, unidad: unidadPara(Math.max(1, Number(v) || 1)) }))
+  }
+  // La fecha de regreso arranca igual que la de salida
+  const setFecha = (e) => {
+    const v = e.target.value
+    setF((p) => ({ ...p, fecha: v, fechaRegreso: !p.fechaRegreso || p.fechaRegreso < v ? v : p.fechaRegreso }))
+  }
 
   const enviar = async (e) => {
     e.preventDefault()
-    const pax = Number(f.pasajeros)
-    let unidad = f.unidad
+    const aviso = (title, html) =>
+      Swal.fire({ ...swalBase, icon: 'warning', title, html, confirmButtonText: 'Entendido', customClass: { ...swalBase.customClass, confirmButton: 'tp-btn-oro' } })
 
     const faltan = [
       !f.nombre.trim() && 'tu nombre',
       !f.origen.trim() && 'de dónde sales',
       !f.destino.trim() && 'a dónde vas',
-      !f.fecha && 'la fecha',
+      !f.fecha && 'la fecha de salida',
+      !f.hora && 'la hora de salida',
+      conRegreso && !f.fechaRegreso && 'la fecha de regreso',
+      conRegreso && !f.horaRegreso && 'la hora de regreso',
     ].filter(Boolean)
     if (faltan.length) {
-      return Swal.fire({ ...swalBase, icon: 'warning', title: 'Nos faltan unos datos', html: `Por favor completa <b>${faltan.length > 1 ? faltan.slice(0, -1).join(', ') + ' y ' + faltan.at(-1) : faltan[0]}</b>.`, confirmButtonText: 'Entendido', customClass: { ...swalBase.customClass, confirmButton: 'tp-btn-oro' } })
+      return aviso('Nos faltan unos datos', `Por favor completa <b>${faltan.length > 1 ? faltan.slice(0, -1).join(', ') + ' y ' + faltan.at(-1) : faltan[0]}</b>.`)
+    }
+    if (conRegreso && `${f.fechaRegreso}T${f.horaRegreso}` <= `${f.fecha}T${f.hora}`) {
+      return aviso('Revisa el regreso', 'La fecha y hora de <b>regreso</b> deben ser después de la salida.')
     }
 
     if (pax > 14) {
@@ -65,28 +97,17 @@ export default function Cotizador({ destinoInicial }) {
         cancelButtonText: 'Corregir',
       })
       if (!r.isConfirmed) return
-    } else if (pax > 4 && unidad.startsWith('Toyota RAV4')) {
-      const r = await Swal.fire({
-        ...swalBase,
-        icon: 'question',
-        title: 'La RAV4 es para 4',
-        html: `Para <b>${pax} pasajeros</b> te recomendamos la <b>Toyota Hiace</b>. ¿La cambiamos?`,
-        showDenyButton: true,
-        confirmButtonText: 'Sí, usar Hiace',
-        denyButtonText: 'Dejar como está',
-      })
-      if (r.isDismissed) return
-      if (r.isConfirmed) unidad = UNIDADES[1]
     }
 
     const filas = [
       ['👤 Nombre', f.nombre],
-      ['📍 Salida', f.origen],
+      ['📍 Sale de', f.origen],
       ['🏁 Destino', f.destino],
-      ['📅 Fecha', fechaBonita(f.fecha) + (f.hora ? ` · ${f.hora} h` : '')],
-      ['👥 Pasajeros', pax],
       ['🧭 Tipo', f.tipo],
-      ['🚐 Unidad', unidad],
+      ['📅 Salida', `${fechaBonita(f.fecha)} · ${f.hora} h`],
+      ...(conRegreso ? [['🔁 Regreso', `${f.fechaRegreso === f.fecha ? 'Mismo día' : fechaBonita(f.fechaRegreso)} · ${f.horaRegreso} h`]] : []),
+      ['👥 Pasajeros', pax],
+      ['🚐 Unidad', nombreUnidad(f.unidad)],
       ...(f.notas.trim() ? [['📝 Notas', f.notas.trim()]] : []),
     ]
 
@@ -153,33 +174,58 @@ export default function Cotizador({ destinoInicial }) {
             <input id="destino" className={input} value={f.destino} onChange={set('destino')} placeholder="Destino" />
           </div>
           <div>
-            <label htmlFor="fecha" className={label}>Fecha</label>
-            <input id="fecha" type="date" min={hoy} className={input} value={f.fecha} onChange={set('fecha')} />
-          </div>
-          <div>
-            <label htmlFor="hora" className={label}>Hora <span className="font-medium text-navy-800/50">(opcional)</span></label>
-            <input id="hora" type="time" className={input} value={f.hora} onChange={set('hora')} />
-          </div>
-          <div>
-            <label htmlFor="pasajeros" className={label}>Pasajeros</label>
-            <input id="pasajeros" type="number" min="1" max="40" className={input} value={f.pasajeros} onChange={set('pasajeros')} />
-          </div>
-          <div>
             <label htmlFor="tipo" className={label}>Tipo de viaje</label>
             <select id="tipo" className={input} value={f.tipo} onChange={set('tipo')}>
               {TIPOS.map((t) => <option key={t}>{t}</option>)}
             </select>
           </div>
+          <div>
+            <label htmlFor="pasajeros" className={label}>Pasajeros</label>
+            <input id="pasajeros" type="number" min="1" max="40" className={input} value={f.pasajeros} onChange={setPasajeros} />
+          </div>
+          <div>
+            <label htmlFor="fecha" className={label}>{f.tipo === 'Aeropuerto' ? 'Fecha' : 'Fecha de salida'}</label>
+            <input id="fecha" type="date" min={hoy} className={input} value={f.fecha} onChange={setFecha} />
+          </div>
+          <div>
+            <label htmlFor="hora" className={label}>{f.tipo === 'Aeropuerto' ? 'Hora en que pasamos por ti' : 'Hora de salida'}</label>
+            <input id="hora" type="time" className={input} value={f.hora} onChange={set('hora')} />
+          </div>
+          {conRegreso && (
+            <>
+              <div>
+                <label htmlFor="fechaRegreso" className={label}>Fecha de regreso</label>
+                <input id="fechaRegreso" type="date" min={f.fecha || hoy} className={input} value={f.fechaRegreso} onChange={set('fechaRegreso')} />
+              </div>
+              <div>
+                <label htmlFor="horaRegreso" className={label}>Hora de regreso</label>
+                <input id="horaRegreso" type="time" className={input} value={f.horaRegreso} onChange={set('horaRegreso')} />
+              </div>
+            </>
+          )}
           <div className="sm:col-span-2">
-            <span className={label}>Unidad preferida</span>
-            <div className="grid gap-2 sm:grid-cols-3">
-              {UNIDADES.map((u) => (
-                <label key={u} className={`cursor-pointer rounded-2xl border-2 px-3 py-2.5 text-center text-sm font-semibold transition ${f.unidad === u ? 'border-turq-500 bg-turq-500/10 text-navy-900' : 'border-arena bg-white text-navy-800/70 hover:border-turq-300'}`}>
-                  <input type="radio" name="unidad" value={u} checked={f.unidad === u} onChange={set('unidad')} className="sr-only" />
-                  {u}
-                </label>
-              ))}
+            <span className={label}>Unidad <span className="font-medium text-navy-800/50">(se elige según los pasajeros)</span></span>
+            <div className="grid grid-cols-2 gap-2">
+              {UNIDADES.map((u) => {
+                const noCabe = pax > u.cupo && u.id !== UNIDADES.at(-1).id
+                const activa = f.unidad === u.id
+                return (
+                  <label
+                    key={u.id}
+                    className={`relative rounded-2xl border-2 px-3 py-2.5 text-center text-sm font-semibold transition ${
+                      noCabe ? 'cursor-not-allowed border-arena bg-white/50 text-navy-800/35' : activa ? 'cursor-pointer border-turq-500 bg-turq-500/10 text-navy-900' : 'cursor-pointer border-arena bg-white text-navy-800/70 hover:border-turq-300'
+                    }`}
+                  >
+                    <input type="radio" name="unidad" value={u.id} checked={activa} disabled={noCabe} onChange={set('unidad')} className="sr-only" />
+                    {u.nombre} <span className="font-medium opacity-70">· hasta {u.cupo}</span>
+                    {recomendada === u.id && (
+                      <span className="absolute -top-2.5 right-3 rounded-full bg-oro-500 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-navy-950">Ideal</span>
+                    )}
+                  </label>
+                )
+              })}
             </div>
+            {pax > 14 && <p className="mt-2 text-sm font-medium text-rojo-600">Más de 14 personas: escríbenos y vemos la mejor opción.</p>}
           </div>
           <div className="sm:col-span-2">
             <label htmlFor="notas" className={label}>Algo más <span className="font-medium text-navy-800/50">(opcional)</span></label>
