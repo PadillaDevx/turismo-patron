@@ -146,7 +146,7 @@ export default function Cotizador({ destinoInicial }) {
           </div>
           <div>
             <label htmlFor="origen" className={label}>¿De dónde sales?</label>
-            <input id="origen" className={input} value={f.origen} onChange={set('origen')} placeholder="Ciudad o colonia" />
+            <input id="origen" className={input} value={f.origen} onChange={set('origen')} placeholder="Ej. Unión de San Antonio" />
           </div>
           <div>
             <label htmlFor="destino" className={label}>¿A dónde vas?</label>

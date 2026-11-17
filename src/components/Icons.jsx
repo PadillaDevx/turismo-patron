@@ -26,5 +26,7 @@ export const Chevron = (p) => <Base {...p}><path d="m6 9 6 6 6-6" /></Base>
 export const Menu = (p) => <Base {...p}><path d="M4 6h16M4 12h16M4 18h16" /></Base>
 export const X = (p) => <Base {...p}><path d="M18 6 6 18M6 6l12 12" /></Base>
 export const Snow = (p) => <Base {...p}><path d="M12 2v20M2 12h20m-4.9-7.1L4.9 19.1m0-14.2 14.2 14.2" /></Base>
+export const IdCard = (p) => <Base {...p}><rect x="2" y="5" width="20" height="14" rx="2" /><path d="M6 10h4M6 14h8M16 10h2" /></Base>
+export const Wrench = (p) => <Base {...p}><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94z" /></Base>
 export const Check = (p) => <Base {...p}><path d="M20 6 9 17l-5-5" /></Base>
 export const Facebook = (p) => <Base {...p}><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" /></Base>

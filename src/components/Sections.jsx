@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { asset, DESTINOS, FAQ, NEGOCIO, PASOS, VEHICULOS, waLink } from '../data'
-import { ArrowRight, Check, Chevron, Facebook, MapPin, Phone, Users, WhatsApp } from './Icons'
+import { asset, CONFIANZA, DESTINOS, FAQ, NEGOCIO, PASOS, VEHICULOS, waLink } from '../data'
+import { ArrowRight, Check, Chevron, Facebook, IdCard, MapPin, Phone, Shield, Users, WhatsApp, Wrench } from './Icons'
 
 export function SectionTitle({ kicker, children, accent, sub, center = false, dark = false }) {
   return (
@@ -84,19 +84,63 @@ export function Vehiculos() {
   )
 }
 
+/* ---------- Sobre nosotros / confianza ---------- */
+const ICONOS = { placa: IdCard, escudo: Shield, llave: Wrench, mapa: MapPin }
+const TONOS = ['bg-turq-500/10 text-turq-600', 'bg-oro-500/15 text-oro-600', 'bg-rojo-500/10 text-rojo-500', 'bg-verde-500/10 text-verde-500']
+
+export function Nosotros() {
+  return (
+    <section id="nosotros" className="mx-auto max-w-7xl px-4 pb-20 sm:px-6">
+      <div className="relative overflow-hidden rounded-[2rem] bg-white p-6 shadow-xl shadow-navy-900/5 ring-1 ring-navy-900/5 sm:p-10 lg:p-12">
+        <div className="corner-stripes pointer-events-none absolute -right-8 -top-2 h-24 w-72 rotate-180 opacity-90" aria-hidden="true" />
+        <div className="relative grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+          <div>
+            <SectionTitle kicker="Sobre nosotros" accent="tranquilo">
+              Viaja seguro y
+            </SectionTitle>
+            <p className="reveal mt-5 text-lg text-navy-800/75">
+              Somos de {NEGOCIO.base} y conocemos la región como nadie. Nuestro compromiso es que llegues bien, a tiempo y cómodo, ya sea en un viaje corto o en un tour con toda la familia.
+            </p>
+            <img src={asset('img/wordmark-dark.png')} alt="" className="reveal mt-8 h-14 w-auto opacity-90" />
+          </div>
+          <ul className="grid gap-4 sm:grid-cols-2">
+            {CONFIANZA.map((c, i) => {
+              const Icon = ICONOS[c.icon]
+              return (
+                <li key={c.t} className="reveal rounded-3xl bg-crema p-6 ring-1 ring-navy-900/5">
+                  <span className={`grid size-12 place-items-center rounded-2xl ${TONOS[i]}`}><Icon /></span>
+                  <h3 className="mt-4 text-lg font-bold text-navy-900">{c.t}</h3>
+                  <p className="mt-1 text-sm text-navy-800/70">{c.d}</p>
+                </li>
+              )
+            })}
+          </ul>
+        </div>
+      </div>
+    </section>
+  )
+}
+
 /* ---------- Destinos ---------- */
 export function Destinos({ onPick }) {
   return (
     <section id="destinos" className="bg-arena/60 py-20">
       <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[0.8fr_2fr] lg:items-center">
         <div>
-          <SectionTitle accent="populares" sub={`Salimos desde ${NEGOCIO.base} hacia donde lo necesites. Elige una idea y te ayudamos a armar el viaje.`}>
+          <SectionTitle accent="populares" sub={`Salimos de ${NEGOCIO.base} y sus alrededores hacia donde lo necesites. Elige una idea y te ayudamos a armar el viaje.`}>
             Destinos
           </SectionTitle>
-          <p className="reveal mt-5 flex items-start gap-2 rounded-2xl bg-white px-4 py-3 text-sm text-navy-800/80 shadow-sm">
-            <MapPin className="mt-0.5 size-4 shrink-0 text-rojo-500" />
-            ¿Tienes otro destino en mente? Escríbenos y lo cotizamos.
-          </p>
+          <div className="reveal mt-6 rounded-2xl bg-white p-4 shadow-sm">
+            <p className="flex items-center gap-2 text-sm font-bold text-navy-900">
+              <MapPin className="size-4 shrink-0 text-rojo-500" /> Pasamos por ti en:
+            </p>
+            <ul className="mt-3 flex flex-wrap gap-2">
+              {NEGOCIO.zona.map((z) => (
+                <li key={z} className="rounded-full bg-turq-500/10 px-3 py-1 text-xs font-semibold text-turq-700">{z}</li>
+              ))}
+            </ul>
+            <p className="mt-3 text-xs text-navy-800/60">¿Tienes otro destino en mente? Escríbenos y lo cotizamos.</p>
+          </div>
         </div>
 
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
@@ -218,7 +262,7 @@ export function Footer() {
             <img src={asset('img/emblem.png')} alt="" className="h-16 w-auto" />
             <img src={asset('img/wordmark.png')} alt={NEGOCIO.nombre} className="h-12 w-auto" />
           </div>
-          <p className="mt-4 max-w-sm">Transporte turístico y privado desde {NEGOCIO.base}. Te llevamos a donde quieras.</p>
+          <p className="mt-4 max-w-sm">Transporte turístico y privado desde {NEGOCIO.base} y alrededores. Te llevamos a donde quieras.</p>
         </div>
         <div>
           <h3 className="mb-3 font-bold text-white">Servicios</h3>
@@ -252,7 +296,9 @@ export function Footer() {
         </div>
       </div>
       <p className="mx-auto mt-12 max-w-7xl px-4 text-xs text-white/40 sm:px-6">
-        © {new Date().getFullYear()} {NEGOCIO.nombre}. Algunas fotos son ilustrativas (Unsplash).
+        © {new Date().getFullYear()} {NEGOCIO.nombre}. Algunas fotos son ilustrativas (Unsplash). Foto de la RAV4:{' '}
+        <a href="https://commons.wikimedia.org/wiki/File:Toyota_Rav4_2.5_2013_(14359533490).jpg" target="_blank" rel="noopener" className="underline hover:text-white/70">order_242</a>,{' '}
+        <a href="https://creativecommons.org/licenses/by-sa/2.0/" target="_blank" rel="noopener" className="underline hover:text-white/70">CC BY-SA 2.0</a>.
       </p>
     </footer>
   )

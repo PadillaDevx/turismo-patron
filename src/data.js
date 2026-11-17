@@ -5,7 +5,10 @@ export const NEGOCIO = {
   telefono: '523957830107', // 52 + 10 dígitos (WhatsApp)
   telefonoVisible: '395 783 0107',
   facebook: '', // pega aquí el link de Facebook cuando lo tengas
-  base: 'Los Altos de Jalisco',
+  base: 'Unión de San Antonio, Jalisco',
+  baseCorta: 'Unión de San Antonio',
+  // Lugares cercanos desde donde también pasamos por ti
+  zona: ['Unión de San Antonio', 'Lagos de Moreno', 'San Diego de Alejandría', 'San Julián', 'León, Gto.'],
 }
 
 // Rutas a /public que funcionan también en GitHub Pages (subcarpeta)
@@ -23,7 +26,6 @@ export const VEHICULOS = [
     id: 'hiace',
     nombre: 'Toyota Hiace',
     detalle: 'Hasta 14 pasajeros',
-    extra: 'Placas de turismo',
     img: asset('img/van.jpg'),
     tags: ['Aire acondicionado', 'Viajes largos', 'Grupos y familias'],
   },
@@ -32,7 +34,7 @@ export const VEHICULOS = [
     nombre: 'Toyota RAV4',
     detalle: 'Hasta 4 pasajeros',
     extra: 'Imagen ilustrativa',
-    img: u('1706509240407-7f3aa19ae740'),
+    img: asset('img/rav4.jpg'), // Foto: order_242 (CC BY-SA 2.0), Wikimedia Commons
     tags: ['Aire acondicionado', 'Viajes privados', 'Aeropuerto'],
   },
   {
@@ -43,6 +45,14 @@ export const VEHICULOS = [
     img: null,
     tags: ['Muy pronto'],
   },
+]
+
+// Sección "Sobre nosotros": por qué viajar con Turismo Patrón
+export const CONFIANZA = [
+  { icon: 'placa', t: 'Placas de turismo', d: 'Nuestras unidades están registradas para el transporte turístico.' },
+  { icon: 'escudo', t: 'Unidades aseguradas', d: 'Viajas protegido durante todo el trayecto.' },
+  { icon: 'llave', t: 'Mantenimiento al día', d: 'Unidades limpias, con aire acondicionado y revisadas antes de salir.' },
+  { icon: 'mapa', t: 'Choferes de la región', d: 'Conocemos las carreteras y los mejores lugares de la zona.' },
 ]
 
 export const DESTINOS = [
@@ -86,7 +96,11 @@ export const FAQ = [
   },
   {
     q: '¿Hasta dónde viajan?',
-    a: 'Salimos desde Los Altos de Jalisco a pueblos, ciudades, aeropuertos y destinos turísticos. Para viajes largos, pregúntanos y lo cotizamos.',
+    a: 'Salimos de Unión de San Antonio y a donde quieras: pueblos, ciudades, aeropuertos y destinos turísticos. Para viajes largos, pregúntanos y lo cotizamos.',
+  },
+  {
+    q: '¿Desde dónde pasan por mí?',
+    a: 'Estamos en Unión de San Antonio, Jalisco, y pasamos por ti en los alrededores: Lagos de Moreno, San Diego de Alejandría, San Julián y León, Guanajuato. Si estás en otro punto cercano, pregúntanos.',
   },
   {
     q: '¿Cuántas personas caben?',

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import Cotizador, { Toast } from './components/Cotizador'
 import Hero, { FeatureBar } from './components/Hero'
 import Navbar from './components/Navbar'
-import { CtaBanner, Destinos, Faq, Footer, Pasos, Vehiculos, WaFloat } from './components/Sections'
+import { CtaBanner, Destinos, Faq, Footer, Nosotros, Pasos, Vehiculos, WaFloat } from './components/Sections'
 
 export default function App() {
   const [destino, setDestino] = useState(null)
@@ -35,6 +35,7 @@ export default function App() {
         <Hero />
         <FeatureBar />
         <Vehiculos />
+        <Nosotros />
         <Destinos onPick={elegirDestino} />
         <Pasos />
         <Cotizador destinoInicial={destino} />

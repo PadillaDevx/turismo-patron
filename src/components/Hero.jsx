@@ -23,7 +23,7 @@ export default function Hero() {
       <div className="mx-auto grid w-full max-w-7xl items-center gap-8 px-4 sm:px-6 xl:grid-cols-[1fr_1.15fr]">
         <div className="relative z-10 max-w-xl xl:max-w-[32rem]">
           <span className="reveal inline-flex items-center gap-2 rounded-full border border-oro-500/40 bg-oro-500/10 px-4 py-1.5 text-sm font-semibold text-oro-300">
-            <MapPin className="size-4" /> Desde {NEGOCIO.base}
+            <MapPin className="size-4" /> Desde {NEGOCIO.baseCorta} y alrededores
           </span>
 
           <h1 className="reveal title mt-5 text-[2.75rem] leading-[1.02] text-white sm:text-6xl xl:text-[3.6rem]">

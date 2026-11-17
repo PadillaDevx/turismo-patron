@@ -5,6 +5,7 @@ import { Menu, WhatsApp, X } from './Icons'
 const LINKS = [
   ['#inicio', 'Inicio'],
   ['#vehiculos', 'Vehículos'],
+  ['#nosotros', 'Nosotros'],
   ['#destinos', 'Destinos'],
   ['#como-funciona', 'Cómo funciona'],
   ['#cotizar', 'Cotizar'],
